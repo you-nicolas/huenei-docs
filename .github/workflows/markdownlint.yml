@@ -1,0 +1,16 @@
+name: Markdown Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  markdownlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run pre-commit (markdown lint)
+        uses: pre-commit/action@v3.0.1

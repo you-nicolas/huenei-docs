@@ -11,6 +11,7 @@ The `key_data.json` currently only fetches `BUG`, `CODE_SMELL`, and `VULNERABILI
 Locate the section where the script makes API calls for `BUG`, `CODE_SMELL`, and `VULNERABILITY`. Add a new block for `SECURITY_HOTSPOT` issues.
 
 **Original Section (Example Snippet, `key_data.json` part):**
+
 ```python
 # Se hace una solicitud a la API de SonarQube para obtener la información de vulnerabilidades del proyecto
 url = f'{sonarqube_url}/api/issues/search?facets=severities&componentKeys={project_key}&types=VULNERABILITY&issueStatuses=OPEN,CONFIRMED,ACCEPTED'
@@ -45,7 +46,7 @@ url = f'{sonarqube_url}/api/issues/search?facets=severities&componentKeys={proje
 response = requests.get(url, auth=(api_token,''))
 
 # Initialize security_hotspot_data to avoid 'not defined' error if API call fails
-security_hotspot_data = None 
+security_hotspot_data = None
 
 if response.status_code == 200:
         data = response.json()
@@ -73,6 +74,7 @@ else:
 Locate the section where `key_data.json` is created or updated. You need to append the newly fetched `security_hotspot_data` to the list that is dumped into the JSON file.
 
 **Original Section (`key_data.json` part):**
+
 ```python
 # ... (rest of the script)
 
@@ -126,7 +128,7 @@ if 'metrics_data' in globals() and 'bug_data' in globals() and 'codesmell_data' 
         else:
                 with open(key_data_file_path,'w') as file:
                         # ADD security_hotspot_data to this list
-                        key_data_list = [bug_data, codesmell_data, vuln_data, security_hotspot_data] 
+                        key_data_list = [bug_data, codesmell_data, vuln_data, security_hotspot_data]
                         json.dump(key_data_list, file, indent=4)
                         print('El archivo key_data.json fue creado exitosamente.')
 
@@ -139,7 +141,7 @@ else:
 
 ---
 
-## Explanation:
+## Explanation
 
 By making these changes, your `sonarqube-report.py` script will now query SonarQube for `SECURITY_HOTSPOT` issues and include their counts (categorized by severity) directly into your `key_data.json`. This will provide a more accurate and comprehensive security overview for your PowerBI dashboards, reflecting the 65+ hotspots identified by SonarQube.
 

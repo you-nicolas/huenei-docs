@@ -1,8 +1,8 @@
 # AI CLI Migration: Gemini → Cursor, and Considerations for Claude
 
-**Author:** Nicolás (Huenei IT Services — personal tooling notes)  
-**Date:** June 2026  
-**Context:** Work notes archive (`huenei-docs`) before job change  
+**Author:** Nicolás (Huenei IT Services — personal tooling notes)
+**Date:** June 2026
+**Context:** Work notes archive (`huenei-docs`) before job change
 **Status:** Cursor migration complete (Phases 0–5). Next workplace: **Claude**.
 
 ---
@@ -17,7 +17,7 @@ My work (June 2026) was a **fork and migration**, not a greenfield design:
 - Migrated Gemini CLI wiring to **Cursor CLI** (rules, skills, hooks, MCP)
 - Documented the process in `docs/ADAPTATION_ANALYSIS.md`
 
-If you use or extend this system, credit the original repo and author. Upstream: https://github.com/ksprashu/gemini-cli-config
+If you use or extend this system, credit the original repo and author. Upstream: <https://github.com/ksprashu/gemini-cli-config>
 
 Local fork / migration workspace: `~/gemini-cli-config`
 
@@ -206,7 +206,7 @@ agent-config/                    # tool-neutral fork
 └── archive/gemini/              # ksprashu-era + local archive
 ```
 
-Credit upstream when publishing: **Prashanth Subrahmanyam**, https://github.com/ksprashu/gemini-cli-config
+Credit upstream when publishing: **Prashanth Subrahmanyam**, <https://github.com/ksprashu/gemini-cli-config>
 
 ---
 

@@ -423,19 +423,19 @@ Menor configuración granular de cache CDN
   for automated builds and deployments. All steps are performed using the Azure Command-Line
   Interface (CLI).
 
-###   2. Prerequisites
+### 2. Prerequisites
 
-   * Azure CLI: Installed on your local machine.
-   * Azure DevOps Extension: The CLI extension for Azure DevOps is required. Install it by
+- Azure CLI: Installed on your local machine.
+- Azure DevOps Extension: The CLI extension for Azure DevOps is required. Install it by
      running az extension add --name azure-devops.
-   * Authentication: You must be logged into your Azure account via the CLI (az login).
-   * Permissions: You need sufficient permissions in:
-       * Azure: To create resource groups and static web apps (e.g., Contributor role).
-       * Azure DevOps: To create pipelines and service connections in the GameStrong project.
+- Authentication: You must be logged into your Azure account via the CLI (az login).
+- Permissions: You need sufficient permissions in:
+  - Azure: To create resource groups and static web apps (e.g., Contributor role).
+  - Azure DevOps: To create pipelines and service connections in the GameStrong project.
 
-###   3. Step-by-Step Provisioning Guide
+### 3. Step-by-Step Provisioning Guide
 
-####   Step 1: Set Environment Variables
+#### Step 1: Set Environment Variables
 
   Open a bash/zsh shell and execute the following commands to set up variables for this
   session. This will reduce repetition and errors.
@@ -449,7 +449,7 @@ LOCATION="eastus2"
 BACKEND_URL="https://ca-gamestrong-api-test.happymeadow-d4eaf473.eastus.azurecontainerapps.io"
 ~~~
 
-####   Step 2: Create the Static Web App Resource
+#### Step 2: Create the Static Web App Resource
 
  This command provisions the Static Web App in Azure
 
@@ -465,7 +465,7 @@ az staticwebapp create \
 
 Note: check --login-with-ado option. Maybe should use another auth option.
 
-####   Step 2.1: Retrieve the Deployment Token
+#### Step 2.1: Retrieve the Deployment Token
 
   The pipeline needs a secret key (a deployment token) to authorize
   deployments to the new Static Web App.
@@ -481,12 +481,12 @@ az staticwebapp secrets list \
   --output tsv
 ~~~
 
-####   Step 3: Create the Azure DevOps Pipeline
+#### Step 3: Create the Azure DevOps Pipeline
 
   This process involves two parts: adding the YAML file to your repository
   and creating the pipeline in the Azure DevOps UI.
 
-#####   Part A: Create the `azure-pipelines.yml` file
+##### Part A: Create the `azure-pipelines.yml` file
 
 ~~~yml
 # azure-pipelines.yml
@@ -536,7 +536,7 @@ stages:
         azure_static_web_apps_api_token: $(deployment_token)
 ~~~
 
-#####   Part B: Create the Pipeline and Secret Variable in Azure DevOps
+##### Part B: Create the Pipeline and Secret Variable in Azure DevOps
 
    1. Navigate to your GameStrong project in Azure DevOps.
    2. Go to Pipelines and click "New pipeline".
@@ -546,13 +546,13 @@ stages:
       "Continue".
    6. Click the "Variables" button in the top right.
    7. Click "New variable".
-       * Name: deployment_token
-       * Value: Paste the deployment token you copied in Step 3.
-       * Check the box for "Keep this value secret".
-       * Click "OK" and then "Save".
+       - Name: deployment_token
+       - Value: Paste the deployment token you copied in Step 3.
+       - Check the box for "Keep this value secret".
+       - Click "OK" and then "Save".
    8. Finally, click "Run" to save and trigger your new pipeline.
 
-####   Step 4: Configure Application Environment Variables
+#### Step 4: Configure Application Environment Variables
 
   Set the runtime environment variables required by the React application. These are securely
   stored in the Static Web App's configuration.
@@ -570,7 +570,7 @@ az staticwebapp appsettings set \
   VITE_ROBOTS_DIRECTIVE="noindex,nofollow"
 ~~~
 
-####  Step 5: Configure Backend CORS
+#### Step 5: Configure Backend CORS
 
   To allow the frontend application to communicate with your backend API, you must configure a
   Cross-Origin Resource Sharing (CORS) rule on the backend Azure Container App.
@@ -592,7 +592,7 @@ az containerapp update \
   --set-ingress-cors-policy allowed-origins="[\"https://$SWA_URL\"]"
 ~~~
 
-###   4. Verification
+### 4. Verification
 
   Once you have committed the final azure-pipelines.yml file, the pipeline will run in Azure
   DevOps. After it completes successfully, the test environment will be live and accessible at
@@ -609,25 +609,25 @@ This document summarizes the relationship between static analysis (SAST), testin
 
 The key is to understand the difference between what SonarQube does natively and what it imports from other tools.
 
-*   **Static Analysis (SAST, Linting, Formatting):**
-    *   This involves analyzing code **without executing it**.
-    *   **SonarQube's primary function is SAST**. It scans the source code to find security vulnerabilities, bugs, and maintainability issues ("code smells").
-    *   Linting and formatting are also forms of static analysis.
+- **Static Analysis (SAST, Linting, Formatting):**
+  - This involves analyzing code **without executing it**.
+  - **SonarQube's primary function is SAST**. It scans the source code to find security vulnerabilities, bugs, and maintainability issues ("code smells").
+  - Linting and formatting are also forms of static analysis.
 
-*   **Dynamic Analysis (Testing & Coverage):**
-    *   This involves **executing the code** to check its behavior.
-    *   **SonarQube does NOT run your tests**. Your CI pipeline runs them using a tool like Vitest or Jest.
-    *   The most important output of the test run for SonarQube is the **coverage report** (e.g., `lcov.info`). SonarQube **imports** this report to visualize how much of the code is covered by tests.
+- **Dynamic Analysis (Testing & Coverage):**
+  - This involves **executing the code** to check its behavior.
+  - **SonarQube does NOT run your tests**. Your CI pipeline runs them using a tool like Vitest or Jest.
+  - The most important output of the test run for SonarQube is the **coverage report** (e.g., `lcov.info`). SonarQube **imports** this report to visualize how much of the code is covered by tests.
 
 ### 2. The Role of ESLint & Prettier
 
 Even though SonarQube performs its own analysis, ESLint and Prettier are crucial for different reasons and at different stages:
 
-1.  **Immediate Developer Feedback:** They integrate directly into code editors (like VS Code) to provide real-time feedback, catching errors and style issues as code is written. This is the "inner loop" of development.
+1. **Immediate Developer Feedback:** They integrate directly into code editors (like VS Code) to provide real-time feedback, catching errors and style issues as code is written. This is the "inner loop" of development.
 
-2.  **Automated Commit-Time Gatekeeping:** Using **Husky** and **lint-staged**, the project automatically formats and fixes code with Prettier and ESLint every time a developer makes a `git commit`. This ensures no poorly formatted or lint-erroring code enters the repository.
+2. **Automated Commit-Time Gatekeeping:** Using **Husky** and **lint-staged**, the project automatically formats and fixes code with Prettier and ESLint every time a developer makes a `git commit`. This ensures no poorly formatted or lint-erroring code enters the repository.
 
-3.  **CI/CD "Fail-Fast" Mechanism:** The `RUN npm run lint` command in the `Dockerfile-SAST` acts as a quick, early check in the pipeline. If linting errors are present, the build fails immediately, saving time and resources by not waiting for the longer SonarQube scan to finish.
+3. **CI/CD "Fail-Fast" Mechanism:** The `RUN npm run lint` command in the `Dockerfile-SAST` acts as a quick, early check in the pipeline. If linting errors are present, the build fails immediately, saving time and resources by not waiting for the longer SonarQube scan to finish.
 
 ### 3. Project-Specific Implementations
 
@@ -635,36 +635,36 @@ This section details the final state and troubleshooting journey for each projec
 
 #### `gamestrong-web`
 
-*   **Summary:** Node.js 22, React, Vitest.
-*   **Process:** A project-specific `DevOps/Dockerfile-SAST` was created. A `.dockerignore` file was added to optimize the build context.
-*   **Troubleshooting Journey:**
-    *   **Initial 0% Coverage:** The first runs reported 0% coverage in SonarQube. Debugging revealed a two-part problem:
-        1.  The `lcov.info` report was being generated in the `build` stage but was not being copied to the later `scan` stage.
-        2.  The root cause was an incorrect `COPY . .` command that created a nested `/app/app` directory structure in the `scan` stage, preventing SonarQube from matching the report paths to the source files.
-    *   **Solution:** The `COPY` command in the `scan` stage was corrected to `COPY --from=build /app/. .`, which correctly copies the contents of the build stage (including the `coverage` directory) into a flat structure.
-    *   **Noisy Coverage Report:** The report initially included system directories from the Docker container (e.g., `/opt`, `/usr`).
-    *   **Solution:** The `sonar-scanner` command was updated with `-Dsonar.coverage.exclusions` to ignore these paths, resulting in a clean and accurate final report.
+- **Summary:** Node.js 22, React, Vitest.
+- **Process:** A project-specific `DevOps/Dockerfile-SAST` was created. A `.dockerignore` file was added to optimize the build context.
+- **Troubleshooting Journey:**
+  - **Initial 0% Coverage:** The first runs reported 0% coverage in SonarQube. Debugging revealed a two-part problem:
+        1. The `lcov.info` report was being generated in the `build` stage but was not being copied to the later `scan` stage.
+        2. The root cause was an incorrect `COPY . .` command that created a nested `/app/app` directory structure in the `scan` stage, preventing SonarQube from matching the report paths to the source files.
+  - **Solution:** The `COPY` command in the `scan` stage was corrected to `COPY --from=build /app/. .`, which correctly copies the contents of the build stage (including the `coverage` directory) into a flat structure.
+  - **Noisy Coverage Report:** The report initially included system directories from the Docker container (e.g., `/opt`, `/usr`).
+  - **Solution:** The `sonar-scanner` command was updated with `-Dsonar.coverage.exclusions` to ignore these paths, resulting in a clean and accurate final report.
 
 #### `gamestrong-app`
 
-*   **Summary:** Node.js 20, React Native, Jest.
-*   **Process:** A project-specific `DevOps/Dockerfile-SAST` and a `.dockerignore` file were created.
-*   **Proactive Configuration:** Based on learnings from the other projects, we proactively identified that the Jest configuration in `package.json` was missing the `collectCoverageFrom` property. The development team was asked to add this to ensure an accurate coverage report is generated from the start.
-*   **Troubleshooting Journey:**
-    *   **Dependency-Check Warnings:** The initial pipeline runs showed many warnings from the OWASP Dependency-Check scanner, indicating it could not find the `node_modules` directory.
-    *   **Root Cause:** Similar to other issues, the `node_modules` directory was not being correctly copied into the final `owasp/dependency-check` stage of the Docker build.
-    *   **Current Status (On Hold):** Several attempts to fix this by explicitly copying the `node_modules` directory did not resolve the issue. This indicates a more subtle problem with the filesystem inside the `owasp/dependency-check` image. This task is currently on hold per user request.
+- **Summary:** Node.js 20, React Native, Jest.
+- **Process:** A project-specific `DevOps/Dockerfile-SAST` and a `.dockerignore` file were created.
+- **Proactive Configuration:** Based on learnings from the other projects, we proactively identified that the Jest configuration in `package.json` was missing the `collectCoverageFrom` property. The development team was asked to add this to ensure an accurate coverage report is generated from the start.
+- **Troubleshooting Journey:**
+  - **Dependency-Check Warnings:** The initial pipeline runs showed many warnings from the OWASP Dependency-Check scanner, indicating it could not find the `node_modules` directory.
+  - **Root Cause:** Similar to other issues, the `node_modules` directory was not being correctly copied into the final `owasp/dependency-check` stage of the Docker build.
+  - **Current Status (On Hold):** Several attempts to fix this by explicitly copying the `node_modules` directory did not resolve the issue. This indicates a more subtle problem with the filesystem inside the `owasp/dependency-check` image. This task is currently on hold per user request.
 
 #### `gamestrong-services`
 
-*   **Summary:** Node.js 20.15.1, Express, Vitest.
-*   **Process:** A project-specific `DevOps/Dockerfile-SAST` was created.
-*   **Prerequisites:** The development team was asked to add `eslint`/`prettier` configurations and to update their `vitest.config.js` to include the `lcov` reporter and an `include` property. This was crucial for generating the correct reports.
-*   **Troubleshooting Journey:**
-    *   **Initial Test Failures:** The pipeline failed because the test suite could not run in the clean CI environment. The root cause was missing environment variables (e.g., `SHARED_SECRET`) required by the tests.
-    *   **Solution:** The user configured a Jenkins Managed File to securely provide a `.env.test` file to the build environment, allowing the tests to pass.
-    *   **0% Coverage:** After fixing the tests, SonarQube still reported 0% coverage. The root cause was discovered to be the `vitest.config.js` file being incorrectly listed in the `.dockerignore` file. This prevented the configuration from being copied into the container, meaning the `lcov` reporter was never activated.
-    *   **Solution:** The `vitest.config.js` line was removed from `.dockerignore`. This allowed the correct configuration to be used, the `lcov.info` file to be generated, and SonarQube to report the correct coverage.
+- **Summary:** Node.js 20.15.1, Express, Vitest.
+- **Process:** A project-specific `DevOps/Dockerfile-SAST` was created.
+- **Prerequisites:** The development team was asked to add `eslint`/`prettier` configurations and to update their `vitest.config.js` to include the `lcov` reporter and an `include` property. This was crucial for generating the correct reports.
+- **Troubleshooting Journey:**
+  - **Initial Test Failures:** The pipeline failed because the test suite could not run in the clean CI environment. The root cause was missing environment variables (e.g., `SHARED_SECRET`) required by the tests.
+  - **Solution:** The user configured a Jenkins Managed File to securely provide a `.env.test` file to the build environment, allowing the tests to pass.
+  - **0% Coverage:** After fixing the tests, SonarQube still reported 0% coverage. The root cause was discovered to be the `vitest.config.js` file being incorrectly listed in the `.dockerignore` file. This prevented the configuration from being copied into the container, meaning the `lcov` reporter was never activated.
+  - **Solution:** The `vitest.config.js` line was removed from `.dockerignore`. This allowed the correct configuration to be used, the `lcov.info` file to be generated, and SonarQube to report the correct coverage.
 
 ## HUE-202 Troubleshooting `VITE_API_BASE_URL` in `gamestrong-web`
 
@@ -676,20 +676,20 @@ The deployed frontend application was making API calls to its own domain instead
 
 ### 2. Hypothesis 1: Variable Not Provided at Build Time
 
-*   **Theory:** Vite applications are statically built. For the backend URL to be included in the final JavaScript, the `VITE_API_BASE_URL` variable must be available during the `npm run build` command.
-*   **Action:** The `azure-pipelines.yml` file was modified to inject the backend URL (stored in a pipeline variable like `$(BACKEND_URL_DEV)`) into the build step using an `env:` block.
-*   **Result:** The issue persisted. This indicated the problem was more complex than simply providing the variable.
+- **Theory:** Vite applications are statically built. For the backend URL to be included in the final JavaScript, the `VITE_API_BASE_URL` variable must be available during the `npm run build` command.
+- **Action:** The `azure-pipelines.yml` file was modified to inject the backend URL (stored in a pipeline variable like `$(BACKEND_URL_DEV)`) into the build step using an `env:` block.
+- **Result:** The issue persisted. This indicated the problem was more complex than simply providing the variable.
 
 ### 3. Hypothesis 2: `.env` File Precedence
 
-*   **Theory:** Vite's environment variable loading rules state that variables in `.env` files (e.g., `.env.production`) take precedence over system-level environment variables set by the pipeline. An empty variable in one of these files could be overriding the pipeline's value.
-*   **Action:** The user confirmed that only a `.env.example` file existed in the repository, which Vite ignores by default. This eliminated the precedence theory.
+- **Theory:** Vite's environment variable loading rules state that variables in `.env` files (e.g., `.env.production`) take precedence over system-level environment variables set by the pipeline. An empty variable in one of these files could be overriding the pipeline's value.
+- **Action:** The user confirmed that only a `.env.example` file existed in the repository, which Vite ignores by default. This eliminated the precedence theory.
 
 ### 4. Hypothesis 3: Variable Not Reaching the Script
 
-*   **Theory:** The variable might be defined in the pipeline but not correctly passed from the `env:` block to the actual `npm` script environment.
-*   **Action:** The `build` script in `package.json` was modified to include a guard clause: `if [ -z "$VITE_API_BASE_URL" ]; then exit 1; fi`. This would fail the build if the variable was empty.
-*   **Result:** The build succeeded, proving the variable was present and not empty within the script's environment. This was confirmed by adding an `echo` command, which printed the correct backend URL to the pipeline log.
+- **Theory:** The variable might be defined in the pipeline but not correctly passed from the `env:` block to the actual `npm` script environment.
+- **Action:** The `build` script in `package.json` was modified to include a guard clause: `if [ -z "$VITE_API_BASE_URL" ]; then exit 1; fi`. This would fail the build if the variable was empty.
+- **Result:** The build succeeded, proving the variable was present and not empty within the script's environment. This was confirmed by adding an `echo` command, which printed the correct backend URL to the pipeline log.
 
 ### 5. Final Root Cause and Solution
 
@@ -697,12 +697,13 @@ After further investigation, it was discovered that the `AzureStaticWebApp@0` ta
 
 **The final solution was to:**
 
-1.  **Remove the manual `npm run build` step** from the pipeline to eliminate the redundant build.
-2.  **Pass the environment variable directly to the `AzureStaticWebApp@0` task** using its own `env:` block, as specified in the official Microsoft documentation.
+1. **Remove the manual `npm run build` step** from the pipeline to eliminate the redundant build.
+2. **Pass the environment variable directly to the `AzureStaticWebApp@0` task** using its own `env:` block, as specified in the official Microsoft documentation.
 
 This ensures that the Oryx build process receives the `VITE_API_BASE_URL` variable at the correct time, bakes it into the final JavaScript files, and deploys the correctly configured application.
 
 **Corrected Pipeline Snippet:**
+
 ```yaml
 - task: AzureStaticWebApp@0
   displayName: 'Deploy to Dev SWA'
@@ -717,31 +718,29 @@ This ensures that the Oryx build process receives the `VITE_API_BASE_URL` variab
 ## Entorno cliente URLs
 
 Gamestrong entorno cliente
- 
+
 ### TEST
- 
-Web: https://zealous-moss-0a445b50f.1.azurestaticapps.net
-api: https://ca-gamestrong-gs-api-test.ambitiousgrass-d089940c.eastus.azurecontainerapps.io
+
+Web: <https://zealous-moss-0a445b50f.1.azurestaticapps.net>
+api: <https://ca-gamestrong-gs-api-test.ambitiousgrass-d089940c.eastus.azurecontainerapps.io>
 db: mysql-gamestrong-gs-test.mysql.database.azure.com
- 
+
 mysql -h mysql-gamestrong-gs-test.mysql.database.azure.com -P 3306 -u adminuser -p
 password: <stored in Key Vault — not committed>
- 
- 
+
 ### UAT
- 
-web: https://nice-tree-0a757950f.1.azurestaticapps.net
-api: https://ca-gamestrong-gs-api-uat.ambitiousgrass-d089940c.eastus.azurecontainerapps.io
+
+web: <https://nice-tree-0a757950f.1.azurestaticapps.net>
+api: <https://ca-gamestrong-gs-api-uat.ambitiousgrass-d089940c.eastus.azurecontainerapps.io>
 db: mysql-gamestrong-gs-uat.mysql.database.azure.com
- 
+
 mysql -h mysql-gamestrong-gs-uat.mysql.database.azure.com -P 3306 -u adminuser -p
 password: <stored in Key Vault — not committed>
 
-
 ### PROD
 
-web: https://gamestrong.ai
-api: https://ca-gamestrong-gs-api-prod.agreeablesmoke-c37277b2.canadacentral.azurecontainerapps.io
+web: <https://gamestrong.ai>
+api: <https://ca-gamestrong-gs-api-prod.agreeablesmoke-c37277b2.canadacentral.azurecontainerapps.io>
 db: mysql-gamestrong-gs-prod.mysql.database.azure.com
 
 mysql -h mysql-gamestrong-gs-prod.mysql.database.azure.com -P 3306 -u adminuser -p

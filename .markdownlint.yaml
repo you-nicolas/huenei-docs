@@ -1,0 +1,29 @@
+# Markdown lint rules for huenei-docs (personal work-notes archive).
+# See https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+default: true
+
+# Personal notes often use long lines (tables, URLs, shell blocks).
+MD013: false
+
+# Work notes may include raw HTML (diagrams, badges, migration snippets).
+MD033: false
+
+# Notes do not always start with an H1 (e.g. pasted chat exports).
+MD041: false
+
+# Allow duplicate headings in long consolidated documents.
+MD024:
+  siblings_only: true
+
+# Legacy notes often omit language tags on fenced blocks.
+MD040: false
+
+# Pasted notes may skip heading levels.
+MD001: false
+
+# Manual ordered-list numbering in work notes.
+MD029: false
+
+# Mixed backtick/tilde fences in older documents.
+MD048: false

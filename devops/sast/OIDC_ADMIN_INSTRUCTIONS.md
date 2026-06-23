@@ -12,9 +12,9 @@ The process involves creating a single identity in Azure AD and configuring it t
 
 After you have completed the steps, I will need the following three values to configure the pipeline:
 
-1.  **Application (client) ID**
-2.  **Directory (tenant) ID**
-3.  **Azure Subscription ID**
+1. **Application (client) ID**
+2. **Directory (tenant) ID**
+3. **Azure Subscription ID**
 
 ---
 

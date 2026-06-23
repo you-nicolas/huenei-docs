@@ -5,19 +5,21 @@
 This document provides a complete guide for provisioning the `gamestrong-services` (backend) and `gamestrong-web` (frontend) applications into `test` and `UAT` environments on a new Azure subscription.
 
 The architecture consists of:
-*   **Backend**: A containerized Node.js application on **Azure Container Apps**, using **Azure Database for MySQL**, **Azure Container Registry (ACR)**, and **Azure Key Vault**.
-*   **Frontend**: A Vite-based React application on **Azure Static Web Apps**.
-*   **CI/CD**: Automated builds and deployments using **GitHub Actions**.
+
+* **Backend**: A containerized Node.js application on **Azure Container Apps**, using **Azure Database for MySQL**, **Azure Container Registry (ACR)**, and **Azure Key Vault**.
+* **Frontend**: A Vite-based React application on **Azure Static Web Apps**.
+* **CI/CD**: Automated builds and deployments using **GitHub Actions**.
 
 The guide is designed to be reusable. By changing a single environment variable, you can provision either the `test` or `UAT` environment.
 
 ## 2. Prerequisites
 
 Before you begin, ensure you have the following:
-*   **Azure CLI**: You are logged into the client's Azure tenant (`az login`).
-*   **Required Permissions**: Your user account has **`Contributor`** and **`User Access Administrator`** roles on the target Azure subscription or resource group.
-*   **GitHub Permissions**: You have Admin rights on the `Gamestrong/AppServices` and `Gamestrong/Web` GitHub repositories to configure secrets and workflows.
-*   **Tools**: `git` is installed locally or in your chosen shell environment.
+
+* **Azure CLI**: You are logged into the client's Azure tenant (`az login`).
+* **Required Permissions**: Your user account has **`Contributor`** and **`User Access Administrator`** roles on the target Azure subscription or resource group.
+* **GitHub Permissions**: You have Admin rights on the `Gamestrong/AppServices` and `Gamestrong/Web` GitHub repositories to configure secrets and workflows.
+* **Tools**: `git` is installed locally or in your chosen shell environment.
 
 ## 3. Part 1: One-Time Subscription Setup
 
@@ -213,14 +215,14 @@ az containerapp ingress enable \
 
 In **both** the `Gamestrong/AppServices` and `Gamestrong/Web` repositories, go to `Settings` > `Secrets and variables` > `Actions` and add the following secrets:
 
-*   `AZURE_CREDENTIALS`: Paste the full JSON output from the `az ad sp create-for-rbac` command in step 3.2.
+* `AZURE_CREDENTIALS`: Paste the full JSON output from the `az ad sp create-for-rbac` command in step 3.2.
 
 In the `Gamestrong/Web` repository, you also need the deployment token for each environment:
 
-*   `AZURE_STATIC_WEB_APP_API_TOKEN_TEST`:
-    *   **Value**: Run `az staticwebapp secrets list --name gamestrong-gs-test-web-swa --query "properties.apiKey" -o tsv` and paste the output.
-*   `AZURE_STATIC_WEB_APP_API_TOKEN_UAT`:
-    *   **Value**: Run `az staticwebapp secrets list --name gamestrong-gs-uat-web-swa --query "properties.apiKey" -o tsv` and paste the output.
+* `AZURE_STATIC_WEB_APP_API_TOKEN_TEST`:
+  * **Value**: Run `az staticwebapp secrets list --name gamestrong-gs-test-web-swa --query "properties.apiKey" -o tsv` and paste the output.
+* `AZURE_STATIC_WEB_APP_API_TOKEN_UAT`:
+  * **Value**: Run `az staticwebapp secrets list --name gamestrong-gs-uat-web-swa --query "properties.apiKey" -o tsv` and paste the output.
 
 ### 5.2. `gamestrong-services` GitHub Workflow
 
@@ -335,11 +337,11 @@ This section details the provisioning of the **production** environment. It incl
 
 ### 7.1. Production Environment Considerations
 
-*   **Resource Isolation**: Production resources will be created in a separate resource group (`gamestrong-rg-prod`) and a dedicated Container App Environment to ensure complete isolation from non-production environments.
-*   **Initial SKUs**: For the initial deployment, resources will be provisioned with the same cost-effective SKUs as the `test` environment. These can be scaled up at any time with minimal downtime as performance needs are established.
-    *   **MySQL**: `Burstable` tier (`Standard_B1s`).
-    *   **ACR**: `Basic` tier.
-*   **Enhanced Security**: The MySQL database will have public access disabled and will be accessed securely via a private endpoint from the Container App's virtual network.
+* **Resource Isolation**: Production resources will be created in a separate resource group (`gamestrong-rg-prod`) and a dedicated Container App Environment to ensure complete isolation from non-production environments.
+* **Initial SKUs**: For the initial deployment, resources will be provisioned with the same cost-effective SKUs as the `test` environment. These can be scaled up at any time with minimal downtime as performance needs are established.
+  * **MySQL**: `Burstable` tier (`Standard_B1s`).
+  * **ACR**: `Basic` tier.
+* **Enhanced Security**: The MySQL database will have public access disabled and will be accessed securely via a private endpoint from the Container App's virtual network.
 
 ### 7.2. Set Production Environment Variables
 
