@@ -1,0 +1,4 @@
+default: true
+MD013: false # Disable line length check for documentation
+MD033: false # Allow inline HTML (common in migration guides)
+MD041: false # Allow first line not to be a top-level header if needed

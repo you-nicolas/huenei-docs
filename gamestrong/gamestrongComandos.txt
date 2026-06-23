@@ -1,0 +1,48 @@
+# ------------------------------------------------------------------
+# SET THE TARGET ENVIRONMENT HERE: 'test' or 'uat'
+# ------------------------------------------------------------------
+export ENVIRONMENT="panel-admin"
+
+# --- Derived Resource Names (do not change) ---
+# Test and UAT environments share the same resource group
+export RESOURCE_GROUP="gamestrong-rg"
+export LOCATION="eastus"
+export ACR_NAME="crgamestrong"
+export MYSQL_SERVER_NAME="mysql-gamestrong-${ENVIRONMENT}"
+export CONTAINER_APP_ENV="caenv-gamestrong-${ENVIRONMENT}"
+export CONTAINER_APP_NAME="ca-gamestrong-api-${ENVIRONMENT}"
+export SWA_NAME="gamestrong-web-${ENVIRONMENT}"
+
+# --- Database Credentials (USE A STRONG, UNIQUE PASSWORD) ---
+export MYSQL_ADMIN_USER="adminuser"
+export MYSQL_ADMIN_PASSWORD="<stored in Key Vault / local env — not committed>"
+export MYSQL_DB_NAME="gamestrong"
+
+
+
+az mysql flexible-server create \
+  --name $MYSQL_SERVER_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location canadacentral \
+  --admin-user $MYSQL_ADMIN_USER \
+  --admin-password $MYSQL_ADMIN_PASSWORD \
+  --tier Burstable \
+  --sku-name Standard_B1ms \
+  --storage-size 32
+
+az mysql flexible-server db create \
+  --resource-group $RESOURCE_GROUP \
+  --server-name $MYSQL_SERVER_NAME \
+  --database-name $MYSQL_DB_NAME
+
+az mysql flexible-server firewall-rule create \
+    --resource-group $RESOURCE_GROUP \
+    --name $MYSQL_SERVER_NAME \
+    --rule-name "AllowAllWindowsAzureIps" \
+    --start-ip-address "0.0.0.0" \
+    --end-ip-address "0.0.0.0"
+
+
+# Create Azure Container Registry (ACR)
+az acr create --name $ACR_NAME --resource-group $RESOURCE_GROUP --sku Basic
+

@@ -1,0 +1,32 @@
+ProtecDiv
+
+arrancó hace 1 mes
+app prototipo del cliente no funciona
+propuesta:
+front y back
+react .net en azure
+
+trunk base
+
+main
+
+dev, test, uat y prod
+
+merge a main promo automatica dev. Test y uat aprobación Alejandro Rozas (Tech Lead). Prod aprobación Lester (cliente)
+
+en un futuro, dev con mínimo 60% de coverage y prod con 80%
+
+formlogic-web
+formlogic-api
+FormLogic (prototipo del cliente que no funciona)
+
+1er tarea:
+- analisis del repo
+- configurar los ambientes de GitHub
+
+Message from client:
+The App registrations, resource groups (RGs), and service principals are created for Dev/QA/UAT in Azure.
+I wanted to setup OIDC for password-less authentication between GitHub Actions and Azure however, when I browsed the FormLogic /-api/-web repos in GitHub, I noticed that environments were not created as yet. We can tackle this next week.
+Should we decide not to use OIDC (preferred), I can securely transfer the credentials via IronBox.
+
+

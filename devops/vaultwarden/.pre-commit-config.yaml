@@ -1,0 +1,25 @@
+# Pre-commit configuration for Huenei Vaultwarden DevSecOps
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        name: Validate YAML
+        description: Ensures compose.yaml and other YAMLs are syntactically correct.
+      - id: check-added-large-files
+      - id: check-json
+        name: Validate JSON
+        description: Checks Vaultwarden config.json if present.
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+        name: Gitleaks (Secret Scanning)
+        description: Prevents accidental commits of secrets (e.g., .env or hardcoded keys).
+        entry: gitleaks protect --verbose --staged

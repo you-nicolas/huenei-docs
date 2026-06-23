@@ -1,0 +1,26 @@
+trigger:
+  - main
+
+pool:
+  name: 'huenei-hosted-ubuntu-agents'
+
+variables:
+- group: keycloak-prod
+
+stages:
+- stage: Deploy
+  jobs:
+  - job: Docker_Deploy
+    steps:
+    - script: |
+        echo "Switching to production Docker context..."
+        docker context use prod-server
+
+        echo "Deploying Keycloak..."
+        docker compose pull
+        docker compose up -d
+      displayName: 'Deploy to DOCKERPROD01'
+      env:
+        POSTGRES_PASSWORD: $(POSTGRES_PASSWORD)
+        DB_PASSWORD: $(DB_PASSWORD)
+        COMPOSE_PROJECT_NAME: keycloak
